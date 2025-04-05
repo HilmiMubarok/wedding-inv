@@ -1,3 +1,6 @@
 /.idea
 
 /vendor/
+
+# Local Netlify folder
+.netlify
