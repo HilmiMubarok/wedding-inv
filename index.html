@@ -687,7 +687,7 @@
 	<script>
 		document.addEventListener('DOMContentLoaded', function () {
 			const musicToggle = document.getElementById('music-toggle');
-			let isMusicPlaying = localStorage.getItem('musicPlaying') === 'true' || false;
+			let isMusicPlaying = localStorage.getItem('musicPlaying') === 'true' || true;
 			let scPlayer;
 
 			// Initialize SoundCloud Widget API

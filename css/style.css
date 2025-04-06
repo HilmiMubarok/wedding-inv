@@ -22,6 +22,18 @@
   align-items: center;
 }
 
+.icon-play2:before {
+  content: "\25B6";
+  display: inline-block;
+  font-family: "icomoon";
+}
+
+.icon-pause2:before {
+  content: "\23F8";
+  display: inline-block;
+  font-family: "icomoon";
+}
+
 .music-control::after {
   content: 'Music';
   display: block;
