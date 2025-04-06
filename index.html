@@ -67,6 +67,20 @@
 
 	<div class="fh5co-loader"></div>
 
+	<!-- Background Music (SoundCloud) -->
+	<div id="soundcloud-player" style="display: none;">
+		<iframe id="soundcloud-iframe" width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay"
+			src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1457497450&color=%23bf9b73&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false">
+		</iframe>
+	</div>
+
+	<!-- Music Control Button -->
+	<div class="music-control">
+		<button id="music-toggle" class="btn-music">
+			<i class="icon-play2"></i>
+		</button>
+	</div>
+
 	<div id="page">
 
 		<!--Floating button-->
@@ -294,13 +308,15 @@
 							<div class="form-group">
 								<label for="nama" class="col-sm-2 control-label">Nama</label>
 								<div class="col-sm-10">
-									<input type="text" class="form-control" id="nama" name="nama" placeholder="Nama Anda" required>
+									<input type="text" class="form-control" id="nama" name="nama"
+										placeholder="Nama Anda" required>
 								</div>
 							</div>
 							<div class="form-group">
 								<label for="ucapan" class="col-sm-2 control-label">Ucapan</label>
 								<div class="col-sm-10">
-									<textarea class="form-control" id="ucapan" name="ucapan" rows="3" placeholder="Tulis ucapan dan doa untuk kedua mempelai" required></textarea>
+									<textarea class="form-control" id="ucapan" name="ucapan" rows="3"
+										placeholder="Tulis ucapan dan doa untuk kedua mempelai" required></textarea>
 								</div>
 							</div>
 							<div class="form-group">
@@ -335,7 +351,8 @@
 							</div>
 						</div>
 						<div class="text-center" style="margin-top: 20px;">
-							<button id="load-more" class="btn btn-sm btn-primary" style="display: none;">Tampilkan Lebih Banyak</button>
+							<button id="load-more" class="btn btn-sm btn-primary" style="display: none;">Tampilkan Lebih
+								Banyak</button>
 						</div>
 					</div>
 				</div>
@@ -452,7 +469,7 @@
 		$('#open-invitation').click(function () {
 			$('#overlay').addClass('hide-overlay');
 			$('body').css('overflow', 'auto'); // Enable scrolling when overlay is hidden
-			playAudio1();
+			// playAudio1();
 			/*yang bagian floating button ada animasinya tapi karena ketutup dulu sama overlay jadinya gak nampak*/
 			/*pengen pas di klik buka undangan baru jalan animasinya*/
 			/*var c = document.getElementsByClassName('right-sidebar');
@@ -663,6 +680,107 @@
 
 		// Since we are using dynamic mode, we need to programmatically open lightGallery
 		inlineGallery.openGallery();
+	</script>
+
+	<!-- Background Music Control Script (SoundCloud) -->
+	<script src="https://w.soundcloud.com/player/api.js"></script>
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			const musicToggle = document.getElementById('music-toggle');
+			let isMusicPlaying = localStorage.getItem('musicPlaying') === 'true' || false;
+			let scPlayer;
+
+			// Initialize SoundCloud Widget API
+			window.setTimeout(function () {
+				const iframe = document.getElementById('soundcloud-iframe');
+				scPlayer = SC.Widget(iframe);
+
+				// Set up SoundCloud player events
+				scPlayer.bind(SC.Widget.Events.READY, function () {
+					console.log('SoundCloud player is ready');
+
+					// Initialize music button state based on stored preference
+					if (isMusicPlaying) {
+						musicToggle.classList.add('playing');
+						musicToggle.innerHTML = '<i class="icon-pause2"></i>';
+						// We can't autoplay until user interaction
+					} else {
+						musicToggle.classList.remove('playing');
+						musicToggle.innerHTML = '<i class="icon-play2"></i>';
+					}
+
+					// Set up event listeners for the SoundCloud player
+					scPlayer.bind(SC.Widget.Events.PLAY, function () {
+						console.log('Started playing');
+						musicToggle.classList.add('playing');
+						musicToggle.innerHTML = '<i class="icon-pause2"></i>';
+						isMusicPlaying = true;
+						localStorage.setItem('musicPlaying', 'true');
+					});
+
+					scPlayer.bind(SC.Widget.Events.PAUSE, function () {
+						console.log('Paused');
+						musicToggle.classList.remove('playing');
+						musicToggle.innerHTML = '<i class="icon-play2"></i>';
+						isMusicPlaying = false;
+						localStorage.setItem('musicPlaying', 'false');
+					});
+
+					scPlayer.bind(SC.Widget.Events.FINISH, function () {
+						// When track finishes, replay it (loop functionality)
+						if (isMusicPlaying) {
+							scPlayer.seekTo(0);
+							scPlayer.play();
+						}
+					});
+				});
+			}, 1000); // Small delay to ensure iframe is fully loaded
+
+			// Function to toggle music play/pause
+			function toggleMusic() {
+				if (!scPlayer) return;
+
+				scPlayer.isPaused(function (isPaused) {
+					if (isPaused) {
+						scPlayer.play();
+					} else {
+						scPlayer.pause();
+					}
+				});
+			}
+
+			// Add click event to music toggle button
+			musicToggle.addEventListener('click', toggleMusic);
+
+			// Try to play music when user interacts with the page
+			document.getElementById('open-invitation').addEventListener('click', function () {
+				if (isMusicPlaying && scPlayer) {
+					// If music should be playing according to saved state, start it now
+					scPlayer.play();
+				}
+			});
+
+			// Handle page visibility changes to pause/resume music
+			document.addEventListener('visibilitychange', function () {
+				if (!scPlayer) return;
+
+				if (document.hidden) {
+					// Page is hidden, pause music if it's playing
+					scPlayer.isPaused(function (isPaused) {
+						if (!isPaused && isMusicPlaying) {
+							scPlayer.pause();
+						}
+					});
+				} else {
+					// Page is visible again, resume music if it should be playing
+					scPlayer.isPaused(function (isPaused) {
+						if (isPaused && isMusicPlaying) {
+							scPlayer.play();
+						}
+					});
+				}
+			});
+		});
 	</script>
 
 	<!-- Copy to Clipboard Script -->
