@@ -289,15 +289,55 @@
 
 				<div class="row animate-box">
 					<div class="col-md-8 col-md-offset-2">
-						<div class="list-group"></div>
+						<!-- Form for submitting wishes -->
+						<form id="wishes-form" class="form-horizontal">
+							<div class="form-group">
+								<label for="nama" class="col-sm-2 control-label">Nama</label>
+								<div class="col-sm-10">
+									<input type="text" class="form-control" id="nama" name="nama" placeholder="Nama Anda" required>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="ucapan" class="col-sm-2 control-label">Ucapan</label>
+								<div class="col-sm-10">
+									<textarea class="form-control" id="ucapan" name="ucapan" rows="3" placeholder="Tulis ucapan dan doa untuk kedua mempelai" required></textarea>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="kehadiran" class="col-sm-2 control-label">Kehadiran</label>
+								<div class="col-sm-10">
+									<select class="form-control" id="kehadiran" name="kehadiran" required>
+										<option value="">-- Pilih Kehadiran --</option>
+										<option value="Hadir">Hadir</option>
+										<option value="Tidak Hadir">Tidak Hadir</option>
+										<option value="Belum Pasti">Belum Pasti</option>
+									</select>
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="col-sm-offset-2 col-sm-10">
+									<button type="submit" class="btn btn-primary">Kirim Ucapan</button>
+									<div id="form-messages" class="mt-3"></div>
+								</div>
+							</div>
+						</form>
 					</div>
 				</div>
 
-				<div id="button-send" class="text-center animate-box">
-					<a href="https://github.com/maulidandev/nikah-rehan-maulidan/issues/new/choose" target="_blank"
-						class="btn btn-primary btn-sm">Kirim Ucapan</a><br>
-					<i style="font-size: 15px">Note : Hanya bisa diisi jika mempunyai akun github. Jika belum ada
-						silahkan daftar terlebih dahulu</i>
+				<!-- Display wishes from spreadsheet -->
+				<div class="row animate-box">
+					<div class="col-md-8 col-md-offset-2">
+						<h3 class="text-center" style="margin-top: 40px; color: #bf9b73;">Ucapan & Doa</h3>
+						<div id="wishes-container" class="list-group">
+							<!-- Wishes will be loaded here -->
+							<div class="text-center" id="loading-wishes">
+								<i class="icon-spinner icon-spin"></i> Memuat ucapan...
+							</div>
+						</div>
+						<div class="text-center" style="margin-top: 20px;">
+							<button id="load-more" class="btn btn-sm btn-primary" style="display: none;">Tampilkan Lebih Banyak</button>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -328,6 +368,7 @@
 			</div>
 		</footer>
 	</div>
+	<!-- <div id="youtube-audio1"></div> -->
 
 	<!-- jQuery -->
 	<script src="js/jquery.min.js"></script>
@@ -353,6 +394,9 @@
 	<!-- Main -->
 	<script src="js/main.js"></script>
 
+	<!-- Wishes -->
+	<script src="js/wishes.js"></script>
+
 	<script src="lib/lightgallery.js/dist/lightgallery.min.js"></script>
 	<script src="lib/lightgallery.js/dist/plugins/thumbnail/lg-thumbnail.min.js"></script>
 	<script src="lib/lightgallery.js/dist/plugins/autoplay/lg-autoplay.min.js"></script>
@@ -370,6 +414,9 @@
 
 		// Set guest name from URL parameter
 		document.addEventListener('DOMContentLoaded', function () {
+			// Disable scrolling when overlay is visible
+			$('body').css('overflow', 'hidden');
+
 			var guestName = getUrlParameter('to');
 			if (guestName) {
 				document.getElementById('guest-name').textContent = guestName;
@@ -404,6 +451,7 @@
 
 		$('#open-invitation').click(function () {
 			$('#overlay').addClass('hide-overlay');
+			$('body').css('overflow', 'auto'); // Enable scrolling when overlay is hidden
 			playAudio1();
 			/*yang bagian floating button ada animasinya tapi karena ketutup dulu sama overlay jadinya gak nampak*/
 			/*pengen pas di klik buka undangan baru jalan animasinya*/
